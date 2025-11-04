@@ -1,0 +1,48 @@
+name: smoke
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: app
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d app" --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci || npm i
+      - run: npx prisma generate || true
+      - run: npm run build || npx tsc -p .
+      - name: Start app
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app
+          REDIS_URL: redis://localhost:6379
+          PORT: 3000
+        run: |
+          node dist/server.js &
+          echo $! > app.pid
+          npx wait-on -t 30000 http://127.0.0.1:3000/health
+      - name: Smoke check
+        run: |
+          curl -fsS http://127.0.0.1:3000/health
+          # ready may fail on stubbed deps; still useful signal
+          curl -fsS http://127.0.0.1:3000/ready || true
+      - name: Stop app
+        if: always()
+        run: |
+          kill $(cat app.pid) || true

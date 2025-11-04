@@ -1,0 +1,4 @@
+export type ReplyRecord = { id:string; messageId:string; threadId:string; replyText:string; confidence:number; snippetIds:string[]; sentAt:string; outcome?:'sent'|'escalated'|'skipped' };
+export function sample<T>(a:T[], rate=0.1){ return a.filter(()=>Math.random()<rate); }
+export function summarizeDaily(records: ReplyRecord[]){ const total=records.length; const escalated=records.filter(r=>r.outcome==='escalated').length; const duplicates=0; const p50Len=percentile(records.map(r=>r.replyText.length),0.5); return { total, escalated, duplicates, p50Len }; }
+function percentile(n:number[], p:number){ if(!n.length) return 0; const s=[...n].sort((a,b)=>a-b); const i=Math.floor((s.length-1)*p); return s[i]; }

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "refund-inquiry",
+    "subject": "refund inquiry",
+    "title": "Refund Inquiry",
+    "response": "Thanks for reaching out. Refunds are handled on your Billing page. Go to Settings → Billing → Refunds to submit your request. If you don’t see the option, reply with your order number and we’ll help.\n— The Support Team"
+  },
+  {
+    "id": "shipping-delay",
+    "subject": "shipping delay",
+    "title": "Shipping Delay",
+    "response": "Thanks for checking in. Live tracking is available on your Orders page. Go to Orders → Select the order → Tracking. If your order is 48 hours past ETA, reply with the order number and we’ll escalate.\n— The Support Team"
+  },
+  {
+    "id": "account-access",
+    "subject": "account access",
+    "title": "Account Access",
+    "response": "If you’re locked out, use the “Forgot password” link on the sign-in page. For SSO users, contact your workspace admin. If you still can’t get in, reply with the email address on the account and we’ll verify and assist.\n— The Support Team"
+  }
+]

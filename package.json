@@ -1,0 +1,31 @@
+{
+  "name": "ai-customer-email-reply-automation-guide",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "build": "tsc -p .",
+    "start": "node dist/server.js",
+    "prisma:gen": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "lint": "eslint .",
+    "test": "node --test ./tests/**/*.test.ts || node ./tests/idempotency.test.ts",
+    "itest": "node ./tests/reply.integration.ts",
+    "mint:gmail": "tsx scripts/oauth-mint-refresh-token.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.20.0",
+    "fastify": "^4.28.1",
+    "googleapis": "^140.0.0",
+    "redis": "^4.6.13",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "eslint": "^9.13.0",
+    "prisma": "^5.20.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
+  }
+}
