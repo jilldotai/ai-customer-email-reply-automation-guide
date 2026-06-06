@@ -1,5 +1,11 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
 model Reply {
   id          String   @id @default(cuid())
@@ -10,6 +16,7 @@ model Reply {
   snippetIds  String[]
   outcome     String?
   sentAt      DateTime @default(now())
+
   @@index([messageId, threadId])
 }
 
