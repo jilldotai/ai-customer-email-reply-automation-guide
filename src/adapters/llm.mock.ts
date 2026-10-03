@@ -1,5 +1,7 @@
+import { DraftOptions, DraftResult } from './llm.js';
+
 // Mock LLM adapter for testing without API key
-export async function draftWithLLM(opts: any) {
+export async function draftWithLLM(opts: DraftOptions): Promise<DraftResult> {
   await new Promise(r => setTimeout(r, 500)); // Simulate API delay
   
   return {

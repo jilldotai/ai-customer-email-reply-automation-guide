@@ -10,7 +10,7 @@ import { loadConfig } from './config.js';
 import { logger } from './logging.js';
 import { ReplyRequest } from './validation.js';
 import { detectIntent, extractOrderNumber, extractTrackingId, getDeptEmails } from './intent.js';
-import templates from './templates/index.json' assert { type: 'json' };
+import templates from './templates/index.json' with { type: 'json' };
 import { brandStyle } from './voice.js';
 import { buildSystemPrompt } from './prompts.js';
 
@@ -24,7 +24,9 @@ app.addHook('onRequest', async (_req, res) => {
 });
 
 const sendLog = redisSendLog(process.env.REDIS_URL);
-const safeLLM = circuitBreaker(() => retry(() => draftWithLLM(buildSystemPrompt())));
+const safeLLM = circuitBreaker((userMessage: string) =>
+  retry(() => draftWithLLM({ systemPrompt: buildSystemPrompt(), userMessage }))
+);
 
 app.get('/health', async () => health());
 
@@ -86,8 +88,8 @@ app.post('/reply', async (req, res) => {
 
   // 3) If no template or no confident path, call LLM
   if (!replyText) {
-    const draft = await safeLLM();
-    const candidate = (draft || '').trim();
+    const draft = await safeLLM(prompt);
+    const candidate = (draft?.text || '').trim();
     if (candidate.length < 10 || candidate.length > 1200) {
       return res.code(202).send({ escalated: true, reason: 'unusable_draft' });
     }
@@ -100,12 +102,12 @@ app.post('/reply', async (req, res) => {
   }
 
   // 4) Idempotency for send
-  const { skipped } = await guardSend(sendLog, { messageId, threadId, replyText });
+  const { skipped } = await guardSend(sendLog, { messageId, threadId, replyText: replyText || '' });
   if (skipped) return res.send({ skipped: true });
 
-  const sent = await gmailSendDraftAsReply({ messageId, threadId, replyText });
+  const sent = await gmailSendDraftAsReply({ messageId, threadId, replyText: replyText || '' });
   await prisma.reply.create({
-    data: { messageId, threadId, replyText, confidence: 0.95, snippetIds: [], outcome: sent.ok ? 'sent' : 'skipped' }
+    data: { messageId, threadId, replyText: replyText || '', confidence: 0.95, snippetIds: [], outcome: sent.ok ? 'sent' : 'skipped' }
   });
 
   return res.send({ ok: sent.ok });
