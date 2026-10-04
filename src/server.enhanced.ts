@@ -5,6 +5,7 @@ import { guardSend } from './idempotency.js';
 import { health } from './health.js';
 import { prisma } from './db.js';
 import { draftWithLLM, getCostMetrics } from './adapters/llm.mock.js';
+import { DraftOptions } from './adapters/llm.js';
 import { gmailSendDraftAsReply, gmailForwardToDept } from './adapters/gmail.js';
 import { loadConfig } from './config.js';
 import { logger } from './logging.js';

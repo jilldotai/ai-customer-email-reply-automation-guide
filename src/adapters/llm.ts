@@ -63,7 +63,7 @@ ${requireCitations ? '- You MUST include citations [KB:N] for every factual clai
           type: 'text',
           text: fullSystemPrompt,
           cache_control: { type: 'ephemeral' }, // Cache system prompt
-        },
+        } as any,
       ],
       messages: [
         {
